@@ -1,0 +1,17 @@
+{
+  "name": "lomegl",
+  "version": "0.0.1",
+  "dependencies": [
+    "lotools",
+    "glm",
+    "glad"
+  ],
+  "features": {
+    "glfw": {
+      "description": "Enable suporrt library for glfw",
+      "dependencies": [
+        "glfw3"
+      ]
+    }
+  }
+}
