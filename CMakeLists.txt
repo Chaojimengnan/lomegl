@@ -101,27 +101,25 @@ endif()
 # ---------------------------------------------------------------------------------------
 # Install
 # ---------------------------------------------------------------------------------------
-function (make_install lib_name)
-    install(
-        TARGETS ${lib_name} EXPORT ${lib_name}-config
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    )
-
-    install(
-        EXPORT ${lib_name}-config
-        NAMESPACE lomegl::
-        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/lomegl
-    )
-endfunction()
-
 message(STATUS "Generating install")
-make_install(lomegl)
 
+list(APPEND lib_name "lomegl")
 if (LOMEGL_USE_GLFW)
-    make_install(lomegl-glfw)
+    list(APPEND lib_name "lomegl-glfw")
 endif()
+
+install(
+    TARGETS ${lib_name} EXPORT lomegl-config
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+install(
+    EXPORT lomegl-config
+    NAMESPACE lomegl::
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/lomegl
+)
 
 install(
     DIRECTORY ${PROJECT_SOURCE_DIR}/include/lomegl
