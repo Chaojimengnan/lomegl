@@ -119,7 +119,15 @@ install(
     EXPORT lomegl-config
     NAMESPACE lomegl::
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/lomegl
+    FILE lomegl-config-targets.cmake
 )
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file("${PROJECT_SOURCE_DIR}/cmake/lomegl-config.cmake.in" 
+        "${CMAKE_CURRENT_BINARY_DIR}/lomegl-config.cmake"
+        INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/lomegl)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/lomegl-config.cmake" DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/lomegl)
 
 install(
     DIRECTORY ${PROJECT_SOURCE_DIR}/include/lomegl
