@@ -54,43 +54,40 @@ gl_vertex& gl_vertex::bind_this()
 }
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-gl_vertex& gl_vertex::bind_elemnt_buffer_data(const void* ebo_data, GLsizeiptr size, GLenum usage, int data_counts)
+gl_vertex& gl_vertex::bind_elemnt_buffer_data(const void* ebo_data, GLsizeiptr size, GLenum usage, int elemnt_counts)
 {
     assert(check_vao_bind_());
     assert(!is_ebo_binded_);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_.get());
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, ebo_data, usage);
-    MYGL_CHECK_GL_ERROR();
+    lomeglcall(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, EBO_.get());
+    lomeglcall(glBufferData, GL_ELEMENT_ARRAY_BUFFER, size, ebo_data, usage);
     is_ebo_binded_ = true;
-    ebo_counts_ = data_counts;
+    ebo_counts_ = elemnt_counts;
     return *this;
 }
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-gl_vertex& gl_vertex::bind_array_buffer_data(const void* vbo_data, GLsizeiptr size, GLenum usage, int data_counts)
+gl_vertex& gl_vertex::bind_array_buffer_data(const void* vbo_data, GLsizeiptr size, GLenum usage, int vertex_counts)
 {
     assert(check_vao_bind_());
     assert(!is_vbo_binded_);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_.get());
-    glBufferData(GL_ARRAY_BUFFER, size, vbo_data, usage);
-    MYGL_CHECK_GL_ERROR();
+    lomeglcall(glBindBuffer, GL_ARRAY_BUFFER, VBO_.get());
+    lomeglcall(glBufferData, GL_ARRAY_BUFFER, size, vbo_data, usage);
     is_vbo_binded_ = true;
-    vbo_counts_ = data_counts;
+    vbo_counts_ = vertex_counts;
     return *this;
 }
 
 gl_vertex& gl_vertex::vertex_attrib_pointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* start_offset)
 {
     assert(check_vao_bind_() && check_vbo_bind_());
-    glVertexAttribPointer(index, size, type, normalized, stride, start_offset);
-    MYGL_CHECK_GL_ERROR();
+    lomeglcall(glVertexAttribPointer, index, size, type, normalized, stride, start_offset);
     return *this;
 }
 
 gl_vertex& gl_vertex::enable_vertex_attrib_array(GLuint index)
 {
     assert(check_vao_bind_() && check_vbo_bind_());
-    glEnableVertexAttribArray(index);
+    lomeglcall(glEnableVertexAttribArray, index);
     assert(glGetError() == 0);
     return *this;
 }
@@ -98,14 +95,14 @@ gl_vertex& gl_vertex::enable_vertex_attrib_array(GLuint index)
 bool gl_vertex::check_vao_bind_()
 {
     int current_bind_vao = 0;
-    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &current_bind_vao);
+    lomeglcall(glGetIntegerv, GL_VERTEX_ARRAY_BINDING, &current_bind_vao);
     return !(current_bind_vao == 0 || current_bind_vao != VAO_.get());
 }
 
 bool gl_vertex::check_vbo_bind_()
 {
     int current_bind_vbo = 0;
-    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &current_bind_vbo);
+    lomeglcall(glGetIntegerv, GL_ARRAY_BUFFER_BINDING, &current_bind_vbo);
     return !(current_bind_vbo == 0 || current_bind_vbo != VBO_.get());
 }
 

@@ -1,4 +1,5 @@
 #include "lomegl/gl_object.h"
+#include "lomegl/gl_exception.h"
 #include "lomegl/gl_shader.h"
 #include "lomegl/gl_texture.h"
 #include "lomegl/gl_vertex.h"
@@ -451,9 +452,9 @@ gl_entity& gl_entity::draw(const std::function<void(gl_entity*)>& func, unsigned
     func(this);
 
     if (current_vertex_ptr.is_ebo_binded())
-        glDrawElements(draw_type, current_vertex_ptr.ebo_counts(), elem_index_type, 0); // NOLINT(modernize-use-nullptr)
+        lomeglcall(glDrawElements, draw_type, current_vertex_ptr.ebo_counts(), elem_index_type, nullptr); // NOLINT(modernize-use-nullptr)
     else
-        glDrawArrays(draw_type, 0, current_vertex_ptr.vbo_counts());
+        lomeglcall(glDrawArrays, draw_type, 0, current_vertex_ptr.vbo_counts());
     return *this;
 }
 

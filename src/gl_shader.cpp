@@ -40,24 +40,24 @@ gl_shader::~gl_shader() = default;
 void gl_shader::add_source_(gl_val& shader_index, std::string_view shader_name, std::string_view source)
 {
     const char* temp_str = source.data();
-    glShaderSource(shader_index.get(), 1, &temp_str, nullptr);
-    glCompileShader(shader_index.get());
+    lomeglcall(glShaderSource, shader_index.get(), 1, &temp_str, nullptr);
+    lomeglcall(glCompileShader, shader_index.get());
 
     int success = 0;
 
-    glGetShaderiv(shader_index.get(), GL_COMPILE_STATUS, &success);
+    lomeglcall(glGetShaderiv, shader_index.get(), GL_COMPILE_STATUS, &success);
 
     if (success == 0)
     {
         char info_log[512];
-        glGetShaderInfoLog(shader_index.get(), 512, nullptr, info_log);
-        glDeleteShader(shader_index.get());
+        lomeglcall(glGetShaderInfoLog, shader_index.get(), 512, nullptr, info_log);
+        lomeglcall(glDeleteShader, shader_index.get());
         shader_index.get() = 0;
         shader_index.release();
         throw shader_error(std::string(shader_name) + " complie fails: " + info_log);
     }
 
-    glAttachShader(shader_program_.get(), shader_index.get());
+    lomeglcall(glAttachShader, shader_program_.get(), shader_index.get());
 }
 
 gl_shader& gl_shader::add_vertex(std::string_view vertex_source)
@@ -87,27 +87,27 @@ gl_shader& gl_shader::add_fragment(std::string_view fragment_source)
 gl_shader& gl_shader::link_shader()
 {
     assert(!is_linked_ && vertex_shader_.get() != 0 && fragment_shader_.get() != 0);
-    glLinkProgram(shader_program_.get());
+    lomeglcall(glLinkProgram, shader_program_.get());
 
     int success = 0;
 
-    glGetProgramiv(shader_program_.get(), GL_LINK_STATUS, &success);
+    lomeglcall(glGetProgramiv, shader_program_.get(), GL_LINK_STATUS, &success);
     if (success == 0)
     {
         char info_log[512];
-        glGetProgramInfoLog(shader_program_.get(), 512, nullptr, info_log);
+        lomeglcall(glGetProgramInfoLog, shader_program_.get(), 512, nullptr, info_log);
         throw shader_error(std::string("program link fails: ") + info_log);
     }
 
     if (geometry_shader_.get() != 0)
     {
-        glDeleteShader(geometry_shader_.get());
+        lomeglcall(glDeleteShader, geometry_shader_.get());
         geometry_shader_.release();
         geometry_shader_.get() = 0;
     }
 
-    glDeleteShader(vertex_shader_.get());
-    glDeleteShader(fragment_shader_.get());
+    lomeglcall(glDeleteShader, vertex_shader_.get());
+    lomeglcall(glDeleteShader, fragment_shader_.get());
     vertex_shader_.release();
     fragment_shader_.release();
     vertex_shader_.get() = fragment_shader_.get() = 0;
@@ -118,7 +118,7 @@ gl_shader& gl_shader::link_shader()
 gl_shader& gl_shader::use()
 {
     assert(is_vaild());
-    glUseProgram(shader_program_.get());
+    lomeglcall(glUseProgram, shader_program_.get());
     return *this;
 }
 } // namespace lomegl

@@ -28,22 +28,20 @@ gl_texture::gl_texture(unsigned int texture_type) : texture_(lomegl::gl_val_fact
 gl_texture& gl_texture::active_texture_unit(unsigned int texture_unit)
 {
     assert(GL_TEXTURE0 <= texture_unit && texture_unit < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
-    glActiveTexture(texture_unit);
+    lomeglcall(glActiveTexture, texture_unit);
     return *this;
 }
 
 gl_texture& gl_texture::bind()
 {
-    glBindTexture(texture_type_, texture_.get());
-    MYGL_CHECK_GL_ERROR();
+    lomeglcall(glBindTexture, texture_type_, texture_.get());
     return *this;
 }
 
 gl_texture& gl_texture::tex_parameteri(unsigned int pname, int param)
 {
     assert(check_texture_bind_());
-    glTexParameteri(texture_type_, pname, param);
-    MYGL_CHECK_GL_ERROR();
+    lomeglcall(glTexParameteri, texture_type_, pname, param);
     return *this;
 }
 
@@ -52,16 +50,15 @@ gl_texture& gl_texture::add_image_data_to(int level, int internal_format,
     unsigned int data_type, const void* image)
 {
     assert(check_texture_bind_());
-    glTexImage2D(texture_type_, level, internal_format, width,
+    lomeglcall(glTexImage2D, texture_type_, level, internal_format, width,
         height, dummy, data_format, data_type, image);
-    MYGL_CHECK_GL_ERROR();
     return *this;
 }
 
 gl_texture& gl_texture::generate_mipmap()
 {
     assert(check_texture_bind_());
-    glGenerateMipmap(texture_type_);
+    lomeglcall(glGenerateMipmap, texture_type_);
     return *this;
 }
 
@@ -71,8 +68,7 @@ bool gl_texture::check_texture_bind_()
     auto current_bind_type_pname = get_texture_pname_from_type_(texture_type_);
     if (current_bind_type_pname == 0)
         return false;
-    glGetIntegerv(current_bind_type_pname, &current_bind_texture);
-    MYGL_CHECK_GL_ERROR();
+    lomeglcall(glGetIntegerv, current_bind_type_pname, &current_bind_texture);
 
     return !(current_bind_texture == 0 || current_bind_texture != texture_.get());
 }

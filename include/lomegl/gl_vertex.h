@@ -24,8 +24,8 @@ public:
 
     // Before any operation, call this function
     gl_vertex& bind_this();
-    gl_vertex& bind_elemnt_buffer_data(const void* ebo_data, GLsizeiptr size, GLenum usage, int data_counts);
-    gl_vertex& bind_array_buffer_data(const void* vbo_data, GLsizeiptr size, GLenum usage, int data_counts);
+    gl_vertex& bind_elemnt_buffer_data(const void* ebo_data, GLsizeiptr size, GLenum usage, int elemnt_counts);
+    gl_vertex& bind_array_buffer_data(const void* vbo_data, GLsizeiptr size, GLenum usage, int vertex_counts);
     gl_vertex& vertex_attrib_pointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* start_offset);
     gl_vertex& enable_vertex_attrib_array(GLuint index);
 

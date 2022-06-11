@@ -3,11 +3,10 @@
 
 #include <cassert>
 #include <exception>
+#include <sstream>
 #include <stdexcept>
 
-#define LOERR_ENABLE_TRANSFER
-#define LOERR_ENABLE_PREDEFINE
-#include "lomegl/thirdparty/loerr.h"
+#include <lotools/errors.h>
 
 namespace lomegl {
 
@@ -17,16 +16,14 @@ struct gl_error : std::runtime_error
 };
 
 // The follwing macro will throw a 'gl_error' exception if glGetError() does't equals zero
-#if !defined(MYGL_DISABLE_CHECK)
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#    define MYGL_CHECK_GL_ERROR()                                                                                            \
-        {                                                                                                                    \
-            auto error_code = glGetError();                                                                                  \
-            LOERR_TRANSFER_IF_VALUE(error_code != 0, lomegl::gl_error_transfer_func, lomegl::get_error_content(error_code)); \
-        }
-#else
-#    define MYGL_CHECK_GL_ERROR()
-#endif
+#define lomeglcall(func, ...) lotcall([](auto) {}, [](const char* filename, int line, const char* funcname, auto) {auto error_code = glGetError(); \
+    if (error_code != 0) {                                                   \
+        std::stringstream out;                                              \
+        out << funcname << " (" << filename << ":" << line << ") " << ::lomegl::get_error_content(error_code) << "\n";\
+        throw std::runtime_error(out.str());\
+        } }, \
+    [](auto) { return true; }, func, __VA_ARGS__)
 
 constexpr const char* get_error_content(unsigned int error_code)
 {
@@ -51,13 +48,6 @@ constexpr const char* get_error_content(unsigned int error_code)
     default:
         return "An unknown error occurred";
     }
-}
-
-inline void gl_error_transfer_func(std::string_view error_conent, int line_num, const char* src_location, const char* func_name, int /*error_code*/)
-{
-    std::stringstream out;
-    out << func_name << " (" << src_location << " : " << line_num << ") " << error_conent << "\n";
-    throw lomegl::gl_error(out.str());
 }
 
 } // namespace lomegl

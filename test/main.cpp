@@ -130,9 +130,9 @@ int main()
         world_instance.use_shader("my_shader");
 
         // 设置gl一些基本东西
-        glClearColor(0.2F, 0.3F, 0.3F, 1.0F);
-        glViewport(0, 0, world_instance.get_screen_width(), world_instance.get_screen_height());
-        glEnable(GL_DEPTH_TEST);
+        lomeglcall(glClearColor, 0.2F, 0.3F, 0.3F, 1.0F);
+        lomeglcall(glViewport, 0, 0, world_instance.get_screen_width(), world_instance.get_screen_height());
+        lomeglcall(glEnable, GL_DEPTH_TEST);
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         // 渲染循环
@@ -144,7 +144,7 @@ int main()
             lomegl::glfw_utility::process_input(window);
 
             // 清除之前的颜色缓冲和深度缓存
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            lomeglcall(glClear, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             // 修改当前着色器的一些uniform变量
             auto color_value = static_cast<float>((sin(glfwGetTime()) / 2.0F) + 0.5F);
