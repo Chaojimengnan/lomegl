@@ -21,7 +21,7 @@ struct gl_error : std::runtime_error
     if (error_code != 0) {                                                   \
         std::stringstream out;                                              \
         out << funcname << " (" << filename << ":" << line << ") " << ::lomegl::get_error_content(error_code) << "\n";\
-        throw std::runtime_error(out.str());\
+        throw ::lomegl::gl_error(out.str());\
         } }, \
     [](auto) { return true; }, func, __VA_ARGS__)
 

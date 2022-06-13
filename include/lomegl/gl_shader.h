@@ -65,12 +65,38 @@ public:
     static constexpr const char* projection_name = "projection";
 
 private:
-    void add_source_(gl_val& shader_index, std::string_view shader_name, std::string_view source);
+    template <typename T>
+    void add_source_(T& shader_index, std::string_view shader_name, std::string_view source) // NOLINT(bugprone-easily-swappable-parameters)
+    {
+        static_assert(std::disjunction_v<std::is_same<T, unique_vertex_shader>,
+                          std::is_same<T, unique_fragment_shader>,
+                          std::is_same<T, unique_geometry_shader>>,
+            "T must be one of vaild type");
+        const char* temp_str = source.data();
+        lomeglcall(glShaderSource, shader_index.get(), 1, &temp_str, nullptr);
+        lomeglcall(glCompileShader, shader_index.get());
 
-    gl_val shader_program_;
-    gl_val vertex_shader_;
-    gl_val fragment_shader_;
-    gl_val geometry_shader_;
+        int success = 0;
+
+        lomeglcall(glGetShaderiv, shader_index.get(), GL_COMPILE_STATUS, &success);
+
+        if (success == 0)
+        {
+            char info_log[512];
+            lomeglcall(glGetShaderInfoLog, shader_index.get(), 512, nullptr, info_log);
+            lomeglcall(glDeleteShader, shader_index.get());
+            shader_index.get() = 0;
+            shader_index.release();
+            throw shader_error(std::string(shader_name) + " complie fails: " + info_log);
+        }
+
+        lomeglcall(glAttachShader, shader_program_.get(), shader_index.get());
+    }
+
+    unique_program shader_program_;
+    unique_vertex_shader vertex_shader_;
+    unique_fragment_shader fragment_shader_;
+    unique_geometry_shader geometry_shader_;
     bool is_linked_ = false;
     std::unordered_map<std::string, int> uniform_loc_map;
 };

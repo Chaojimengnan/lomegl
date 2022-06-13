@@ -6,7 +6,7 @@
 
 namespace lomegl {
 
-gl_texture::gl_texture(unsigned int texture_type) : texture_(lomegl::gl_val_factory(gl_val_type::texture)),
+gl_texture::gl_texture(unsigned int texture_type) : texture_(lomegl::gl_val_factory<gl_val_type::texture>()),
                                                     texture_type_(texture_type)
 {
     // Make sure target_type is vaild
@@ -15,12 +15,12 @@ gl_texture::gl_texture(unsigned int texture_type) : texture_(lomegl::gl_val_fact
     }());
 }
 
-[[nodiscard]] const gl_val& gl_texture::get_texture() const noexcept
+[[nodiscard]] const unique_texture& gl_texture::get_texture() const noexcept
 {
     return texture_;
 }
 
-[[nodiscard]] gl_val& gl_texture::get_texture() noexcept
+[[nodiscard]] unique_texture& gl_texture::get_texture() noexcept
 {
     return texture_;
 }
@@ -38,6 +38,7 @@ gl_texture& gl_texture::bind()
     return *this;
 }
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 gl_texture& gl_texture::tex_parameteri(unsigned int pname, int param)
 {
     assert(check_texture_bind_());
@@ -45,6 +46,7 @@ gl_texture& gl_texture::tex_parameteri(unsigned int pname, int param)
     return *this;
 }
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 gl_texture& gl_texture::add_image_data_to(int level, int internal_format,
     int width, int height, int dummy, unsigned int data_format,
     unsigned int data_type, const void* image)

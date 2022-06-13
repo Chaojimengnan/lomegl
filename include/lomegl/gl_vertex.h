@@ -33,9 +33,9 @@ private:
     bool check_vao_bind_();
     bool check_vbo_bind_();
 
-    gl_val VAO_;
-    gl_val VBO_;
-    gl_val EBO_;
+    unique_vao VAO_;
+    unique_vbo VBO_;
+    unique_ebo EBO_;
     bool is_vbo_binded_ = false;
     bool is_ebo_binded_ = false;
     int ebo_counts_ = 0;

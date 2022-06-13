@@ -3,9 +3,9 @@
 
 namespace lomegl {
 
-gl_vertex::gl_vertex() : VAO_(gl_val_factory(gl_val_type::vao)),
-                         VBO_(gl_val_factory(gl_val_type::vbo)),
-                         EBO_(gl_val_factory(gl_val_type::ebo))
+gl_vertex::gl_vertex() : VAO_(gl_val_factory<gl_val_type::vao>()),
+                         VBO_(gl_val_factory<gl_val_type::vbo>()),
+                         EBO_(gl_val_factory<gl_val_type::ebo>())
 {
 }
 
@@ -77,6 +77,7 @@ gl_vertex& gl_vertex::bind_array_buffer_data(const void* vbo_data, GLsizeiptr si
     return *this;
 }
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 gl_vertex& gl_vertex::vertex_attrib_pointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* start_offset)
 {
     assert(check_vao_bind_() && check_vbo_bind_());

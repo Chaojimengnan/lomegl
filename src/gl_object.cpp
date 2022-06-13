@@ -438,6 +438,7 @@ gl_entity& gl_entity::draw(unsigned int draw_type, unsigned int elem_index_type)
         draw_type, elem_index_type);
 }
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 gl_entity& gl_entity::draw(const std::function<void(gl_entity*)>& func, unsigned int draw_type, unsigned int elem_index_type)
 {
     assert(!vertex_.empty());

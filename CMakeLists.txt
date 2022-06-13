@@ -12,13 +12,13 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose Release or Debug" FORCE)
 endif()
 
-# lomegl require at least C++17
+# lomegl require at least C++20
 if(NOT CMAKE_CXX_STANDARD)
-    message(STATUS "CMAKE_CXX_STANDARD is not set, automatically set it to C++17")
-    set(CMAKE_CXX_STANDARD 17)
+    message(STATUS "CMAKE_CXX_STANDARD is not set, automatically set it to C++20")
+    set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
-elseif(CMAKE_CXX_STANDARD LESS 17)
-    message(FATAL_ERROR "lomegl require at least C++17!")
+elseif(CMAKE_CXX_STANDARD LESS 20)
+    message(FATAL_ERROR "lomegl require at least C++20!")
 endif()
 
 # ---------------------------------------------------------------------------------------

@@ -6,7 +6,7 @@
 
 namespace lomegl {
 
-using glfw_control = lot::raii_control<decltype(glfwInit)*, decltype(glfwTerminate)*, glfwInit, glfwTerminate>;
+using glfw_control = lot::raii_control<glfwInit, glfwTerminate>;
 
 struct glfw_utility
 {

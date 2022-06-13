@@ -14,8 +14,8 @@ public:
     gl_texture& operator=(const gl_texture&) = delete;
     gl_texture& operator=(gl_texture&&) = default;
 
-    [[nodiscard]] const gl_val& get_texture() const noexcept;
-    [[nodiscard]] gl_val& get_texture() noexcept;
+    [[nodiscard]] const unique_texture& get_texture() const noexcept;
+    [[nodiscard]] unique_texture& get_texture() noexcept;
     gl_texture& active_texture_unit(unsigned int texture_unit);
     gl_texture& bind();
     gl_texture& tex_parameteri(unsigned int pname, int param);
@@ -28,7 +28,7 @@ private:
     bool check_texture_bind_();
     [[nodiscard]] static constexpr unsigned int get_texture_pname_from_type_(unsigned int target_type);
 
-    gl_val texture_;
+    unique_texture texture_;
     unsigned int texture_type_ = 0;
 };
 
