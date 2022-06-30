@@ -23,7 +23,7 @@ struct gl_error : std::runtime_error
         out << funcname << " (" << filename << ":" << line << ") " << ::lomegl::get_error_content(error_code) << "\n";\
         throw ::lomegl::gl_error(out.str());\
         } }, \
-    [](auto) { return true; }, func, __VA_ARGS__)
+    [](auto) constexpr { return true; }, func, __VA_ARGS__)
 
 constexpr const char* get_error_content(unsigned int error_code)
 {

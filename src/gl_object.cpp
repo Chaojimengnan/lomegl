@@ -375,43 +375,34 @@ gl_object& gl_object::add_scale_z(float scale_z) noexcept
     return *this;
 }
 
-gl_entity::gl_entity(std::string_view vertex, std::initializer_list<std::string_view> texture_list)
-    : vertex_(vertex)
+gl_entity::gl_entity(const char* vertex, std::initializer_list<const char*> texture_list)
+    : vertex_(gl_world::get_current_world()->get<gl_vertex, true>(vertex))
 {
-    // Should not have empty str and must in gl_world
-    assert([&texture_list] {
-        for (auto&& item : texture_list)
-            if (item.empty() || !gl_world::instance().exists<gl_texture>(item))
-                return false;
-        return true;
-    }());
-    assert(gl_world::instance().exists<gl_vertex>(vertex) || vertex.empty());
+    auto&& world_ins = *gl_world::get_current_world();
 
     for (auto&& item : texture_list)
-        texture_.emplace_back(item.data());
+        texture_.push_back(world_ins.get<gl_texture, true>(item));
 }
 
-[[nodiscard]] const std::string& gl_entity::get_vertex() const noexcept
+[[nodiscard]] const std::weak_ptr<gl_vertex>& gl_entity::get_vertex() const noexcept
 {
     return vertex_;
 }
 
-[[nodiscard]] const std::vector<std::string>& gl_entity::get_texture_list() const noexcept
+[[nodiscard]] const std::vector<std::weak_ptr<gl_texture>>& gl_entity::get_texture_list() const noexcept
 {
     return texture_;
 }
 
-gl_entity& gl_entity::set_vertex(std::string_view vertex)
+gl_entity& gl_entity::set_vertex(const char* vertex)
 {
-    assert(gl_world::instance().exists<gl_vertex>(vertex) || vertex.empty());
-    vertex_ = vertex;
+    vertex_ = gl_world::get_current_world()->get<gl_vertex, true>(vertex);
     return *this;
 }
 
-gl_entity& gl_entity::add_texture(std::string_view new_texture)
+gl_entity& gl_entity::add_texture(const char* new_texture)
 {
-    assert(!new_texture.empty());
-    texture_.emplace_back(new_texture.data());
+    texture_.push_back(gl_world::get_current_world()->get<gl_texture, true>(new_texture));
     return *this;
 }
 
@@ -433,7 +424,7 @@ gl_entity& gl_entity::clear_texture() noexcept
 gl_entity& gl_entity::draw(unsigned int draw_type, unsigned int elem_index_type)
 {
     return draw([](gl_entity* entity) {
-        gl_world::instance().get_current_shader().uniform(glUniformMatrix4fv, "model", 1, GL_FALSE, glm::value_ptr(entity->get_model_mat()));
+        gl_world::get_current_world()->get_current_shader().uniform(glUniformMatrix4fv, "model", 1, GL_FALSE, glm::value_ptr(entity->get_model_mat()));
     },
         draw_type, elem_index_type);
 }
@@ -441,21 +432,29 @@ gl_entity& gl_entity::draw(unsigned int draw_type, unsigned int elem_index_type)
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 gl_entity& gl_entity::draw(const std::function<void(gl_entity*)>& func, unsigned int draw_type, unsigned int elem_index_type)
 {
-    assert(!vertex_.empty());
-    auto&& world_ins = gl_world::instance();
+    auto&& vertex_ptr = vertex_.lock();
+    if (!vertex_ptr) [[unlikely]]
+    {
+        throw std::runtime_error("Vertex ref is no longer available");
+    }
 
-    auto& current_vertex_ptr = world_ins.get<gl_vertex>(vertex_);
-
-    current_vertex_ptr.bind_this();
-    for (auto&& iter : texture_)
-        world_ins.get<gl_texture>(iter).bind();
+    vertex_ptr->bind_this();
+    for (auto&& texture : texture_)
+    {
+        auto&& texture_ptr = texture.lock();
+        if (!texture_ptr) [[unlikely]]
+        {
+            throw std::runtime_error("Texture ref is no longer available");
+        }
+        texture_ptr->bind();
+    }
 
     func(this);
 
-    if (current_vertex_ptr.is_ebo_binded())
-        lomeglcall(glDrawElements, draw_type, current_vertex_ptr.ebo_counts(), elem_index_type, nullptr); // NOLINT(modernize-use-nullptr)
+    if (vertex_ptr->is_ebo_binded())
+        lomeglcall(glDrawElements, draw_type, vertex_ptr->ebo_counts(), elem_index_type, nullptr); // NOLINT(modernize-use-nullptr)
     else
-        lomeglcall(glDrawArrays, draw_type, 0, current_vertex_ptr.vbo_counts());
+        lomeglcall(glDrawArrays, draw_type, 0, vertex_ptr->vbo_counts());
     return *this;
 }
 

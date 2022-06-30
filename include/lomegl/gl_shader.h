@@ -28,15 +28,15 @@ public:
 
     [[nodiscard]] bool is_vaild() const noexcept;
     [[nodiscard]] unsigned int shader() const noexcept;
-    [[nodiscard]] int get_uniform_loc(std::string_view uniform_name) const noexcept;
-    gl_shader& add_vertex(std::string_view vertex_source);
-    gl_shader& add_geometry(std::string_view geometry_source);
-    gl_shader& add_fragment(std::string_view fragment_source);
+    [[nodiscard]] int get_uniform_loc(const char* uniform_name) const noexcept;
+    gl_shader& add_vertex(const char* vertex_source);
+    gl_shader& add_geometry(const char* geometry_source);
+    gl_shader& add_fragment(const char* fragment_source);
     gl_shader& link_shader();
     gl_shader& use();
 
     template <typename Func, typename... Args>
-    gl_shader& uniform(Func func, std::string_view uniform_name, Args&&... args)
+    gl_shader& uniform(Func func, const char* uniform_name, Args&&... args)
     {
         assert(is_vaild());
         // Must call use() first
@@ -46,15 +46,15 @@ public:
             return !(current_program == 0 || current_program != shader_program_.get());
         }());
 
-        auto iter = uniform_loc_map.find(uniform_name.data());
+        auto iter = uniform_loc_map.find(uniform_name);
         if (iter != uniform_loc_map.end())
         {
             func(iter->second, std::forward<Args>(args)...);
         } else {
             auto loc = get_uniform_loc(uniform_name);
             if (loc == -1)
-                throw shader_error(std::string("Can't find uniform name ") + uniform_name.data());
-            uniform_loc_map.emplace(uniform_name.data(), loc);
+                throw shader_error(std::string("Can't find uniform name ") + uniform_name);
+            uniform_loc_map.emplace(uniform_name, loc);
             func(loc, std::forward<Args>(args)...);
         }
         return *this;
@@ -66,13 +66,13 @@ public:
 
 private:
     template <typename T>
-    void add_source_(T& shader_index, std::string_view shader_name, std::string_view source) // NOLINT(bugprone-easily-swappable-parameters)
+    void add_source_(T& shader_index, const char* shader_name, const char* source) // NOLINT(bugprone-easily-swappable-parameters)
     {
         static_assert(std::disjunction_v<std::is_same<T, unique_vertex_shader>,
                           std::is_same<T, unique_fragment_shader>,
                           std::is_same<T, unique_geometry_shader>>,
             "T must be one of vaild type");
-        const char* temp_str = source.data();
+        const char* temp_str = source;
         lomeglcall(glShaderSource, shader_index.get(), 1, &temp_str, nullptr);
         lomeglcall(glCompileShader, shader_index.get());
 

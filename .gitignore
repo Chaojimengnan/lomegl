@@ -2,3 +2,6 @@
 .cache
 output
 build
+
+# my learnopengl example
+learnopengl_example

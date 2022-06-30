@@ -16,9 +16,9 @@ void glfw_utility::on_window_size_change(GLFWwindow* /*window*/, int width, int 
 void glfw_utility::process_input(GLFWwindow* window)
 {
     float camera_speed = 5.0F * delta_time;
-    auto&& my_camera = lomegl::gl_world::instance().get_current_camera();
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, 1);
+    auto&& my_camera = lomegl::gl_world::get_current_world()->get_current_camera();
+    // if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    //     glfwSetWindowShouldClose(window, 1);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         my_camera.add_pos_z_local(camera_speed);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -29,16 +29,16 @@ void glfw_utility::process_input(GLFWwindow* window)
         my_camera.add_pos_x_local(-camera_speed);
 }
 
-GLFWwindow* glfw_utility::init()
+GLFWwindow* glfw_utility::init(std::string_view title_name, int width, int height, GLFWmonitor* monitor, GLFWwindow* share, int major_version, int minor_version)
 {
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major_version);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor_version);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(width, height, title_name.data(), monitor, share);
     if (window == nullptr)
         throw std::runtime_error("Failed to create GLFW window");
     glfwMakeContextCurrent(window);
@@ -79,6 +79,6 @@ void glfw_utility::mouse_callback(GLFWwindow* /*window*/, double xpos, double yp
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
-    lomegl::gl_world::instance().get_current_camera().add_angle_local(0, glm::radians(xoffset), glm::radians(yoffset));
+    lomegl::gl_world::get_current_world()->get_current_camera().add_angle_local(0, glm::radians(xoffset), glm::radians(yoffset));
 }
 } // namespace lomegl

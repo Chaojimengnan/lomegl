@@ -10,15 +10,13 @@ namespace lomegl {
 
 gl_world::gl_world() = default;
 
-gl_world::~gl_world() = default;
-
-gl_world& gl_world::instance()
+gl_world::~gl_world()
 {
-    static gl_world world_;
-    return world_;
+    if (get_current_world() == this)
+        get_current_world_() = nullptr;
 }
 
-gl_world& gl_world::set_current_camera(std::string_view obj_name)
+gl_world& gl_world::set_current_camera(const char* obj_name)
 {
     assert(exists<gl_object>(obj_name));
     current_camera_ = obj_name;
@@ -28,13 +26,13 @@ gl_world& gl_world::set_current_camera(std::string_view obj_name)
 [[nodiscard]] gl_shader& gl_world::get_current_shader()
 {
     assert(!current_shader_.empty());
-    return get<gl_shader>(current_shader_);
+    return get<gl_shader>(current_shader_.c_str());
 }
 
 [[nodiscard]] gl_object& gl_world::get_current_camera()
 {
     assert(!current_camera_.empty());
-    return get<gl_object>(current_camera_);
+    return get<gl_object>(current_camera_.c_str());
 }
 
 [[nodiscard]] std::string gl_world::get_current_shader_name() noexcept
@@ -73,7 +71,7 @@ int gl_world::get_screen_height() const noexcept
 gl_world& gl_world::set_current_shader_view_mat()
 {
     assert(!current_shader_.empty() && !current_camera_.empty());
-    get<gl_shader>(current_shader_).uniform(glUniformMatrix4fv, gl_shader::view_name, 1, GL_FALSE, glm::value_ptr(get<gl_object>(current_camera_).get_view_mat()));
+    get<gl_shader>(current_shader_.c_str()).uniform(glUniformMatrix4fv, gl_shader::view_name, 1, GL_FALSE, glm::value_ptr(get<gl_object>(current_camera_.c_str()).get_view_mat()));
     return *this;
 }
 
@@ -81,15 +79,15 @@ gl_world& gl_world::set_current_shader_projection_mat(float fov, float near, flo
 {
     assert(!current_shader_.empty());
     glm::mat4 projection = glm::perspective(fov, static_cast<float>(screen_size_.first) / static_cast<float>(screen_size_.second), near, far);
-    get<gl_shader>(current_shader_).uniform(glUniformMatrix4fv, gl_shader::projection_name, 1, GL_FALSE, glm::value_ptr(projection));
+    get<gl_shader>(current_shader_.c_str()).uniform(glUniformMatrix4fv, gl_shader::projection_name, 1, GL_FALSE, glm::value_ptr(projection));
     return *this;
 }
 
-gl_world& gl_world::use_shader(std::string_view shader_name)
+gl_world& gl_world::use_shader(const char* shader_name)
 {
     assert(exists<gl_shader>(shader_name));
     current_shader_ = shader_name;
-    get<gl_shader>(current_shader_).use();
+    get<gl_shader>(current_shader_.c_str()).use();
     return *this;
 }
 

@@ -9,9 +9,11 @@
 
 #include <functional>
 #include <initializer_list>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
+
 
 namespace lomegl {
 
@@ -107,15 +109,14 @@ class gl_entity : public gl_object
 {
 public:
     gl_entity() = default;
-    gl_entity(std::string_view vertex, std::initializer_list<std::string_view> texture_list);
+    gl_entity(const char* vertex, std::initializer_list<const char*> texture_list);
 
-    // gl_shader* get_shader();
-    [[nodiscard]] const std::string& get_vertex() const noexcept;
-    [[nodiscard]] const std::vector<std::string>& get_texture_list() const noexcept;
-    // gl_entity& set_shader(gl_shader* shader);
-    gl_entity& set_vertex(std::string_view vertex);
-    gl_entity& add_texture(std::string_view new_texture);
+    [[nodiscard]] const std::weak_ptr<gl_vertex>& get_vertex() const noexcept;
+    [[nodiscard]] const std::vector<std::weak_ptr<gl_texture>>& get_texture_list() const noexcept;
+    gl_entity& set_vertex(const char* vertex);
+    gl_entity& add_texture(const char* new_texture);
     gl_entity& remove_texture(int texture_index);
+    gl_entity& replace_texture(const char* new_texture, int texture_index);
     gl_entity& clear_texture() noexcept;
 
     // Draw this entity, if the vertex is not use EBO, second param is ignored
@@ -126,8 +127,8 @@ public:
     gl_entity& draw(const std::function<void(gl_entity*)>& func, unsigned int draw_type, unsigned int elem_index_type = 0);
 
 private:
-    std::string vertex_;
-    std::vector<std::string> texture_;
+    std::weak_ptr<gl_vertex> vertex_;
+    std::vector<std::weak_ptr<gl_texture>> texture_;
 };
 
 } // namespace lomegl

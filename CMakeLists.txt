@@ -25,9 +25,9 @@ endif()
 # Set Build options
 # ---------------------------------------------------------------------------------------
 option(LOMEGL_USE_GLFW "Enable suporrt library for glfw" OFF)
-option(LOMEGL_BUILD_TEST "Build test example(for dev purpose only)" ON)
+option(LOMEGL_BUILD_LEARN_EXAMPLE "Build learn opengl example(for dev purpose only)" ON)
 
-if (LOMEGL_BUILD_TEST)
+if (LOMEGL_BUILD_LEARN_EXAMPLE)
     set(LOMEGL_USE_GLFW ON)
     list(APPEND VCPKG_MANIFEST_FEATURES "glfw")
 endif()
@@ -92,10 +92,8 @@ endif()
 # Start to build lomegl-test(for dev purpose only)
 # ---------------------------------------------------------------------------------------
 
-if (LOMEGL_BUILD_TEST)
-    add_executable(lomegl-test test/main.cpp)
-    target_include_directories(lomegl-test PRIVATE test)
-    target_link_libraries(lomegl-test PRIVATE lomegl::lomegl-glfw)
+if (LOMEGL_BUILD_LEARN_EXAMPLE)
+    add_subdirectory(learnopengl_example)
 endif()
 
 # ---------------------------------------------------------------------------------------
