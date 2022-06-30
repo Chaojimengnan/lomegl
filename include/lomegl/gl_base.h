@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <type_traits>
+#include <utility>
 
 #include <lotools/raii_control.h>
 
@@ -89,5 +90,26 @@ auto gl_val_factory()
     }
     return gl_val_factory<val_type>(val);
 }
+
+class string_id
+{
+    friend class gl_world;
+
+public:
+    string_id() = default;
+    string_id(std::string sid) : sid_(std::move(sid)) { }
+
+    [[nodiscard]] const std::string& get_id() const noexcept
+    {
+        return sid_;
+    }
+
+private:
+    void set_id(const std::string& sid) noexcept
+    {
+        sid_ = sid;
+    }
+    std::string sid_;
+};
 
 } // namespace lomegl

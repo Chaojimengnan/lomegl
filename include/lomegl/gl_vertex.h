@@ -4,7 +4,7 @@
 namespace lomegl {
 
 // The class which manage how vertex array data input to vertex shader.
-class gl_vertex
+class gl_vertex : public string_id
 {
 public:
     gl_vertex();

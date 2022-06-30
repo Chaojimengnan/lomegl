@@ -16,7 +16,7 @@ struct shader_error : std::runtime_error
 };
 
 // This class manage shader program.
-class gl_shader
+class gl_shader : public string_id
 {
 public:
     gl_shader();

@@ -61,6 +61,7 @@ public:
         auto&& item = map->emplace(obj_name, std::make_shared<T>(std::forward<Args>(args)...));
         if (!item.second)
             throw std::runtime_error(std::string("emplace texture ") + obj_name + " fails!");
+        item.first->second->set_id(obj_name);
         return static_cast<T&>(*item.first->second.get());
     }
 

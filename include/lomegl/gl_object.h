@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 
+#include "lomegl/gl_base.h"
 #include "lomegl/gl_fwd.h"
 
 #include <glm/glm.hpp>
@@ -14,10 +15,9 @@
 #include <string_view>
 #include <vector>
 
-
 namespace lomegl {
 
-class gl_object
+class gl_object : public string_id
 {
 public:
     gl_object();

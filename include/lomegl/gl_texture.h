@@ -4,7 +4,7 @@
 
 namespace lomegl {
 
-class gl_texture
+class gl_texture : public string_id
 {
 public:
     gl_texture(unsigned int texture_type);
