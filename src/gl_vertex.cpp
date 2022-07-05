@@ -26,15 +26,15 @@ gl_vertex::~gl_vertex() = default;
     return EBO_.get();
 }
 
-[[nodiscard]] bool gl_vertex::is_vbo_binded() const noexcept
-{
-    return is_vbo_binded_;
-}
+// [[nodiscard]] bool gl_vertex::is_vbo_binded() const noexcept
+// {
+//     return is_vbo_binded_;
+// }
 
-[[nodiscard]] bool gl_vertex::is_ebo_binded() const noexcept
-{
-    return is_ebo_binded_;
-}
+// [[nodiscard]] bool gl_vertex::is_ebo_binded() const noexcept
+// {
+//     return is_ebo_binded_;
+// }
 
 [[nodiscard]] int gl_vertex::ebo_counts() const noexcept
 {
@@ -57,10 +57,10 @@ gl_vertex& gl_vertex::bind_this()
 gl_vertex& gl_vertex::bind_elemnt_buffer_data(const void* ebo_data, GLsizeiptr size, GLenum usage, int elemnt_counts)
 {
     assert(check_vao_bind_());
-    assert(!is_ebo_binded_);
+    // assert(!is_ebo_binded_);
     lomeglcall(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, EBO_.get());
     lomeglcall(glBufferData, GL_ELEMENT_ARRAY_BUFFER, size, ebo_data, usage);
-    is_ebo_binded_ = true;
+    // is_ebo_binded_ = true;
     ebo_counts_ = elemnt_counts;
     return *this;
 }
@@ -69,10 +69,10 @@ gl_vertex& gl_vertex::bind_elemnt_buffer_data(const void* ebo_data, GLsizeiptr s
 gl_vertex& gl_vertex::bind_array_buffer_data(const void* vbo_data, GLsizeiptr size, GLenum usage, int vertex_counts)
 {
     assert(check_vao_bind_());
-    assert(!is_vbo_binded_);
+    // assert(!is_vbo_binded_);
     lomeglcall(glBindBuffer, GL_ARRAY_BUFFER, VBO_.get());
     lomeglcall(glBufferData, GL_ARRAY_BUFFER, size, vbo_data, usage);
-    is_vbo_binded_ = true;
+    // is_vbo_binded_ = true;
     vbo_counts_ = vertex_counts;
     return *this;
 }

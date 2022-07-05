@@ -35,28 +35,29 @@ using unique_texture = lot::fn_unique_val<unsigned int, [](unsigned int& index) 
 template <gl_val_type val_type>
 auto gl_val_factory(unsigned int val)
 {
-    if constexpr (val_type == gl_val_type::vao)
+    using enum gl_val_type;
+    if constexpr (val_type == vao)
     {
         return unique_vao { val };
-    } else if constexpr (val_type == gl_val_type::vbo)
+    } else if constexpr (val_type == vbo)
     { // NOLINT(bugprone-branch-clone)
         return unique_vbo { val };
-    } else if constexpr (val_type == gl_val_type::ebo)
+    } else if constexpr (val_type == ebo)
     {
         return unique_ebo { val };
-    } else if constexpr (val_type == gl_val_type::vertex_shader)
+    } else if constexpr (val_type == vertex_shader)
     { // NOLINT(bugprone-branch-clone)
         return unique_vertex_shader { val };
-    } else if constexpr (val_type == gl_val_type::fragment_shader)
+    } else if constexpr (val_type == fragment_shader)
     {
         return unique_fragment_shader { val };
-    } else if constexpr (val_type == gl_val_type::geometry_shader)
+    } else if constexpr (val_type == geometry_shader)
     {
         return unique_geometry_shader { val };
-    } else if constexpr (val_type == gl_val_type::program)
+    } else if constexpr (val_type == program)
     {
         return unique_program { val };
-    } else if constexpr (val_type == gl_val_type::texture)
+    } else if constexpr (val_type == texture)
     {
         return unique_texture { val };
     }
@@ -66,25 +67,26 @@ template <gl_val_type val_type>
 auto gl_val_factory()
 {
     unsigned int val = 0;
-    if constexpr (val_type == gl_val_type::vao)
+    using enum gl_val_type;
+    if constexpr (val_type == vao)
     {
         glGenVertexArrays(1, &val);
-    } else if constexpr (val_type == gl_val_type::vbo || val_type == gl_val_type::ebo)
+    } else if constexpr (val_type == vbo || val_type == ebo)
     {
         glGenBuffers(1, &val);
-    } else if constexpr (val_type == gl_val_type::vertex_shader)
+    } else if constexpr (val_type == vertex_shader)
     {
         val = glCreateShader(GL_VERTEX_SHADER);
-    } else if constexpr (val_type == gl_val_type::fragment_shader)
+    } else if constexpr (val_type == fragment_shader)
     {
         val = glCreateShader(GL_FRAGMENT_SHADER);
-    } else if constexpr (val_type == gl_val_type::geometry_shader)
+    } else if constexpr (val_type == geometry_shader)
     {
         val = glCreateShader(GL_GEOMETRY_SHADER);
-    } else if constexpr (val_type == gl_val_type::program)
+    } else if constexpr (val_type == program)
     {
         val = glCreateProgram();
-    } else if constexpr (val_type == gl_val_type::texture)
+    } else if constexpr (val_type == texture)
     {
         glGenTextures(1, &val);
     }

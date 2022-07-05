@@ -17,8 +17,8 @@ public:
     [[nodiscard]] unsigned int vao() const noexcept;
     [[nodiscard]] unsigned int vbo() const noexcept;
     [[nodiscard]] unsigned int ebo() const noexcept;
-    [[nodiscard]] bool is_vbo_binded() const noexcept;
-    [[nodiscard]] bool is_ebo_binded() const noexcept;
+    // [[nodiscard]] bool is_vbo_binded() const noexcept;
+    // [[nodiscard]] bool is_ebo_binded() const noexcept;
     [[nodiscard]] int ebo_counts() const noexcept;
     [[nodiscard]] int vbo_counts() const noexcept;
 
@@ -36,8 +36,8 @@ private:
     unique_vao VAO_;
     unique_vbo VBO_;
     unique_ebo EBO_;
-    bool is_vbo_binded_ = false;
-    bool is_ebo_binded_ = false;
+    // bool is_vbo_binded_ = false;
+    // bool is_ebo_binded_ = false;
     int ebo_counts_ = 0;
     int vbo_counts_ = 0;
 };
